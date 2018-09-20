@@ -57,11 +57,9 @@ public class MachineShopSimulator {
             if (machine[theMachine].getJobQ().isEmpty()) // no waiting job
                 eList.setFinishTime(theMachine, largeTime);
             else {// take job off the queue and work on it
-                machine[theMachine].setActiveJob((Job) machine[theMachine].getJobQ()
-                        .remove());
-                machine[theMachine].setTotalWait(machine[theMachine].getTotalWait() + timeNow
-                        - machine[theMachine].getActiveJob().getArrivalTime());
-                machine[theMachine].setNumTasks(machine[theMachine].getNumTasks() + 1);
+                getNextJob(machine[theMachine]);
+                setReturnTime(machine[theMachine]);
+                incrementTasks(machine[theMachine]);
                 int t = machine[theMachine].getActiveJob().removeNextTask();
                 eList.setFinishTime(theMachine, timeNow + t);
             }
@@ -74,6 +72,20 @@ public class MachineShopSimulator {
         }
 
         return lastJob;
+    }
+
+    private static void incrementTasks(Machine machine) {
+        machine.setNumTasks(machine.getNumTasks() + 1);
+    }
+
+    private static void setReturnTime(Machine machine) {
+        machine.setTotalWait(machine.getTotalWait() + timeNow
+                - machine.getActiveJob().getArrivalTime());
+    }
+
+    private static void getNextJob(Machine machine) {
+        machine.setActiveJob((Job) machine.getJobQ()
+                .remove());
     }
 
     private static void setMachineChangeOverTimes(SimulationSpecification specification) {
