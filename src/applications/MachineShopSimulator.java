@@ -28,8 +28,8 @@ public class MachineShopSimulator {
         if (theJob.getTaskQ().isEmpty()) {// no next task
             simulationResults.setJobCompletionData(theJob.getId(), timeNow, timeNow - theJob.getLength());
             return false;
-        } else {// theJob has a next task
-                // get machine for next task
+        } else {
+            // theJob has a next task get machine for next task
             int p = getMachine(theJob);
             // put on machine p's wait queue
             machine[p].getJobQ().put(theJob);
@@ -51,25 +51,23 @@ public class MachineShopSimulator {
      * 
      * @return last job run on this machine
      */
-    static Job changeState(int theMachine) {// Task on theMachine has finished,
+    static Job changeState(int theMachine) {// Task on theMachine has finished, schedule next one.
         Machine currentMachine = machine[theMachine];
-                                            // schedule next one.
-        Job lastJob;
-        if (currentMachine.getActiveJob() == null) {// in idle or change-over
-                                                    // state
-            lastJob = null;
-            // wait over, ready for new job
+        Job lastJob = null;
+        if (currentMachine.getActiveJob() == null) {
+            // in idle or change-over state wait over, ready for new job
             if (currentMachine.getJobQ().isEmpty()) // no waiting job
                 eList.setFinishTime(theMachine, largeTime);
-            else {// take job off the queue and work on it
+            else {
+                // take job off the queue and work on it
                 getNextJob(currentMachine);
                 setReturnTime(currentMachine);
                 incrementTasks(currentMachine);
                 int t = currentMachine.getActiveJob().removeNextTask();
                 eList.setFinishTime(theMachine, timeNow + t);
             }
-        } else {// task has just finished on currentMachine
-                // schedule change-over time
+        } else {
+            // task has just finished on currentMachine schedule change-over time
             lastJob = currentMachine.getActiveJob();
             currentMachine.setActiveJob(null);
             eList.setFinishTime(theMachine, timeNow
