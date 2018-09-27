@@ -44,6 +44,10 @@ cmake-build-*/
 
 # IntelliJ
 out/
+.idea/
+.classpath
+.project
+
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
@@ -125,3 +129,7 @@ gradle-app.setting
 
 
 # End of https://www.gitignore.io/api/gradle
+.idea/modules/smells-in-machine-shop-simulator-team-name.iml
+lib/
+
+
