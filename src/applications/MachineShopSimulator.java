@@ -30,21 +30,18 @@ public class MachineShopSimulator {
             return false;
         } else {
             // theJob has a next task get machine for next task
-            int p = getMachine(theJob);
+            int nextMachine = theJob.getNextMachine();
             // put on machine p's wait queue
-            machine[p].getJobQ().put(theJob);
+            machine[nextMachine].getJobQ().put(theJob);
             theJob.setArrivalTime(timeNow);
             // if p idle, schedule immediately
-            if (eList.nextEventTime(p) == largeTime) {// machine is idle
-                changeState(p);
+            if (eList.nextEventTime(nextMachine) == largeTime) {// machine is idle
+                changeState(nextMachine);
             }
             return true;
         }
     }
 
-    private static int getMachine(Job theJob) {
-        return ((Task) theJob.getTaskQ().getFrontElement()).getMachine();
-    }
 
     /**
      * change the state of theMachine
