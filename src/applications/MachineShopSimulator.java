@@ -57,9 +57,9 @@ public class MachineShopSimulator {
                 eList.setFinishTime(theMachine, largeTime);
             else {
                 // take job off the queue and work on it
-                getNextJob(currentMachine);
-                setReturnTime(currentMachine);
-                incrementTasks(currentMachine);
+                currentMachine.getNextJob();
+                currentMachine.setReturnTime();
+                currentMachine.incrementTasks();
                 int t = currentMachine.getActiveJob().removeNextTask();
                 eList.setFinishTime(theMachine, timeNow + t);
             }
@@ -74,18 +74,8 @@ public class MachineShopSimulator {
         return lastJob;
     }
 
-    private static void incrementTasks(Machine machine) {
-        machine.setNumTasks(machine.getNumTasks() + 1);
-    }
-
-    private static void setReturnTime(Machine machine) {
-        machine.setTotalWait(machine.getTotalWait() + timeNow
-                - machine.getActiveJob().getArrivalTime());
-    }
-
-    private static void getNextJob(Machine machine) {
-        machine.setActiveJob((Job) machine.getJobQ()
-                .remove());
+    public static int getTimeNow() {
+        return timeNow;
     }
 
     private static void setMachineChangeOverTimes(SimulationSpecification specification) {
