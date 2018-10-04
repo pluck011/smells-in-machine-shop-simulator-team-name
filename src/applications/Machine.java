@@ -15,6 +15,19 @@ class Machine {
         jobQ = new LinkedQueue();
     }
 
+    public void setReturnTime() {
+        this.setTotalWait(totalWait + MachineShopSimulator.getTimeNow()
+                - activeJob.getArrivalTime());
+    }
+
+    public void getNextJob() {
+        this.setActiveJob((Job) jobQ.remove());
+    }
+
+    public void incrementTasks() {
+        this.setNumTasks(numTasks + 1);
+    }
+
     public LinkedQueue getJobQ() {
         return jobQ;
     }

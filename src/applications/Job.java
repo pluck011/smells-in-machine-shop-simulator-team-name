@@ -21,6 +21,10 @@ class Job {
         getTaskQ().put(new Task(theMachine, theTime));
     }
 
+    public int getNextMachine() {
+        return ((Task) this.taskQ.getFrontElement()).getMachine();
+    }
+
     /**
      * remove next task of job and return its time also update length
      */
