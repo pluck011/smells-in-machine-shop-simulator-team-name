@@ -1,6 +1,7 @@
 package applications;
 
 import dataStructures.LinkedQueue;
+import javafx.util.Pair;
 
 class Job {
     // data members
@@ -17,19 +18,36 @@ class Job {
     }
 
     // other methods
-    public void addTask(int theMachine, int theTime) {
-        getTaskQ().put(new Task(theMachine, theTime));
-    }
 
-    public int getNextMachine() {
-        return ((Task) this.taskQ.getFrontElement()).getMachine();
+    /**
+     * add a task with the data structure Pair<> on this.taskQ
+     * @param theMachine is the Key in Pair<>
+     * @param theTime is the Value in Pair<>
+     */
+    public void addTask(int theMachine, int theTime) {
+        getTaskQ().put(new Pair<>(theMachine, theTime));
     }
 
     /**
-     * remove next task of job and return its time also update length
+     * get next machine and return it to
+     * MachineShopSimulator.moveToNextMachine()
+     * @return next machine
+     */
+    public int getNextMachine() {
+        Pair task = (Pair) this.taskQ.getFrontElement();
+        int machine = (Integer) task.getKey();
+        return machine;
+    }
+
+    /**
+     * remove next task from the job and return its time
+     * to MachineShopSimulator.changeState()
+     * also update length
+     * @return the time for task
      */
     public int removeNextTask() {
-        int theTime = ((Task) getTaskQ().remove()).getTime();
+        Pair task = ((Pair) getTaskQ().remove());
+        int theTime = ((Integer) task.getValue());
         length = getLength() + theTime;
         return theTime;
     }
