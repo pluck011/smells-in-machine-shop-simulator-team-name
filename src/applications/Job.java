@@ -1,20 +1,20 @@
 package applications;
 
 import dataStructures.LinkedQueue;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 class Job {
     // data members
     private LinkedQueue taskQ; // this job's tasks
-    private int length; // sum of scheduled task times
-    private int arrivalTime; // arrival time at current queue
+    private int length; // sum of scheduled task times - default is 0
+    private int arrivalTime; // arrival time at current queue - default is 0
     private int id; // job identifier
 
     // constructor
     Job(int theId) {
         id = theId;
         taskQ = new LinkedQueue();
-        // length and arrivalTime have default value 0
     }
 
     // other methods
@@ -25,7 +25,7 @@ class Job {
      * @param theTime is the Value in Pair<>
      */
     public void addTask(int theMachine, int theTime) {
-        getTaskQ().put(new Pair<>(theMachine, theTime));
+        getTaskQ().put(new ImmutablePair<Integer, Integer>(theMachine, theTime));
     }
 
     /**
@@ -34,8 +34,8 @@ class Job {
      * @return next machine
      */
     public int getNextMachine() {
-        Pair task = (Pair) this.taskQ.getFrontElement();
-        int machine = (Integer) task.getKey();
+        Pair<Integer, Integer> task = (ImmutablePair<Integer, Integer>) this.taskQ.getFrontElement();
+        int machine = task.getKey();
         return machine;
     }
 
@@ -46,8 +46,8 @@ class Job {
      * @return the time for task
      */
     public int removeNextTask() {
-        Pair task = ((Pair) getTaskQ().remove());
-        int theTime = ((Integer) task.getValue());
+        Pair<Integer, Integer> task = ((ImmutablePair<Integer, Integer>) getTaskQ().remove());
+        int theTime = task.getValue();
         length = getLength() + theTime;
         return theTime;
     }
