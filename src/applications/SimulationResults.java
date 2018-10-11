@@ -1,23 +1,28 @@
 package applications;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SimulationResults {
     private int finishTime;
     private int numMachines;
     private int[] numTasksPerMachine;
     private int[] totalWaitTimePerMachine;
-    private JobCompletionData[] jobCompletions;
+    private Map<Integer, ArrayList<Integer>>[] jobCompletions;
     private int nextJob = 0;
 
     public SimulationResults(int numJobs) {
-        jobCompletions = new JobCompletionData[numJobs];
+        jobCompletions = new HashMap[numJobs];
     }
 
     public void print() {
-        for (JobCompletionData data : jobCompletions) {
-            System.out.println("Job " + data.getJobNumber() + " has completed at "
-                    + data.getCompletionTime() + " Total wait was " + data.getTotalWaitTime());
+        for (Map<Integer, ArrayList<Integer>> map : jobCompletions) {
+            for (Map.Entry<Integer, ArrayList<Integer>> entry : map.entrySet()) {
+                System.out.println("Job " + entry.getKey() + " has completed at "
+                        + entry.getValue().get(0)+ " Total wait was " + entry.getValue().get(1));
+            }
         }
 
         System.out.println("Finish time = " + finishTime);
@@ -58,12 +63,17 @@ public class SimulationResults {
         this.totalWaitTimePerMachine = totalWaitTimePerMachine;
     }
 
-    public JobCompletionData[] getJobCompletionData() {
-        return jobCompletions;
+    public Map<Integer, ArrayList<Integer>> getNthJobCompletionData(int i) {
+        return jobCompletions[i];
     }
 
     public void setJobCompletionData(int jobNumber, int completionTime, int totalWaitTime) {
-        JobCompletionData jobCompletionData = new JobCompletionData(jobNumber, completionTime, totalWaitTime);
+        ArrayList<Integer> timeHolder = new ArrayList<>();
+        timeHolder.add(completionTime);
+        timeHolder.add(totalWaitTime);
+
+        Map<Integer, ArrayList<Integer>> jobCompletionData = new HashMap<Integer, ArrayList<Integer>>();
+        jobCompletionData.put(jobNumber, timeHolder);
         jobCompletions[nextJob] = jobCompletionData;
         nextJob++;
     }

@@ -5,6 +5,9 @@ import com.pholser.junit.quickcheck.Property;
 import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import static junit.framework.TestCase.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -19,8 +22,8 @@ public class SimulationProperties {
     {
         final SimulationResults results = MachineShopSimulator.runSimulation(specification);
         final int finishTime = results.getFinishTime();
-        final SimulationResults.JobCompletionData[] jobCompletionData = results.getJobCompletionData();
-        final int lastJobCompletionTime = jobCompletionData[jobCompletionData.length-1].getCompletionTime();
+        final Map<Integer, ArrayList<Integer>> jobCompletionData = results.getNthJobCompletionData(specification.getNumJobs() - 1);
+        final int lastJobCompletionTime = jobCompletionData.values().stream().findFirst().get().get(0);
         assertEquals(finishTime, lastJobCompletionTime);
     }
 
@@ -38,8 +41,11 @@ public class SimulationProperties {
         }
 
         int totalJobWaitTime = 0;
-        for (SimulationResults.JobCompletionData jobCompletionData : results.getJobCompletionData()) {
-            final int jobWaitTime = jobCompletionData.getTotalWaitTime();
+        Map<Integer, ArrayList<Integer>> jobCompletionData;
+
+        for(int j = 0; j < specification.getNumJobs(); j++) {
+            jobCompletionData = results.getNthJobCompletionData(j);
+            final int jobWaitTime = jobCompletionData.values().stream().findFirst().get().get(1);
             assertThat(jobWaitTime, greaterThanOrEqualTo(0));
             totalJobWaitTime += jobWaitTime;
         }
@@ -54,10 +60,13 @@ public class SimulationProperties {
     {
         final SimulationResults results = MachineShopSimulator.runSimulation(specification);
 
-        SimulationResults.JobCompletionData[] jobCompletionData = results.getJobCompletionData();
-        for (int i=1; i<jobCompletionData.length-1; ++i) {
-            assertThat(jobCompletionData[i].getCompletionTime(),
-                    lessThanOrEqualTo(jobCompletionData[i+1].getCompletionTime()));
+        Map<Integer, ArrayList<Integer>> jobCompletionData;
+        Map<Integer, ArrayList<Integer>> jobCompletionData2;
+        for (int i = 1; i < specification.getNumJobs() - 1; ++i) {
+            jobCompletionData = results.getNthJobCompletionData(i);
+            jobCompletionData2 = results.getNthJobCompletionData(i + 1);
+            assertThat(jobCompletionData.values().stream().findFirst().get().get(0),
+                    lessThanOrEqualTo(jobCompletionData2.values().stream().findFirst().get().get(0)));
         }
     }
 
