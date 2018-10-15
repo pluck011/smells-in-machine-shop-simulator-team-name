@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 public class SimulationResults {
     private int finishTime;
     private int numMachines;
     private int[] numTasksPerMachine;
     private int[] totalWaitTimePerMachine;
-    private Map<Integer, ArrayList<Integer>>[] jobCompletions;
+
+    // the key is the job number, the completionTime is the left value of the ImmutablePair and the totalWaitTime is the right value of the ImmutablePair
+    private Map<Integer, ImmutablePair<Integer, Integer>>[] jobCompletions;
     private int nextJob = 0;
 
     public SimulationResults(int numJobs) {
@@ -18,10 +21,10 @@ public class SimulationResults {
     }
 
     public void print() {
-        for (Map<Integer, ArrayList<Integer>> map : jobCompletions) {
-            for (Map.Entry<Integer, ArrayList<Integer>> entry : map.entrySet()) {
+        for (Map<Integer, ImmutablePair<Integer, Integer>> map : jobCompletions) {
+            for (Map.Entry<Integer, ImmutablePair<Integer, Integer>> entry : map.entrySet()) {
                 System.out.println("Job " + entry.getKey() + " has completed at "
-                        + entry.getValue().get(0)+ " Total wait was " + entry.getValue().get(1));
+                        + entry.getValue().left + " Total wait was " + entry.getValue().right);
             }
         }
 
@@ -63,16 +66,14 @@ public class SimulationResults {
         this.totalWaitTimePerMachine = totalWaitTimePerMachine;
     }
 
-    public Map<Integer, ArrayList<Integer>> getNthJobCompletionData(int i) {
+    public Map<Integer, ImmutablePair<Integer, Integer>> getNthJobCompletionData(int i) {
         return jobCompletions[i];
     }
 
     public void setJobCompletionData(int jobNumber, int completionTime, int totalWaitTime) {
-        ArrayList<Integer> timeHolder = new ArrayList<>();
-        timeHolder.add(completionTime);
-        timeHolder.add(totalWaitTime);
+        ImmutablePair<Integer, Integer> timeHolder = new ImmutablePair<>(completionTime, totalWaitTime);
 
-        Map<Integer, ArrayList<Integer>> jobCompletionData = new HashMap<Integer, ArrayList<Integer>>();
+        Map<Integer, ImmutablePair<Integer, Integer>> jobCompletionData = new HashMap();
         jobCompletionData.put(jobNumber, timeHolder);
         jobCompletions[nextJob] = jobCompletionData;
         nextJob++;

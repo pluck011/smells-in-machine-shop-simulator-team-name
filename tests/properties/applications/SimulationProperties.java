@@ -3,6 +3,7 @@ package applications;
 import com.pholser.junit.quickcheck.From;
 import com.pholser.junit.quickcheck.Property;
 import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
@@ -22,8 +23,8 @@ public class SimulationProperties {
     {
         final SimulationResults results = MachineShopSimulator.runSimulation(specification);
         final int finishTime = results.getFinishTime();
-        final Map<Integer, ArrayList<Integer>> jobCompletionData = results.getNthJobCompletionData(specification.getNumJobs() - 1);
-        final int lastJobCompletionTime = jobCompletionData.values().stream().findFirst().get().get(0);
+        final Map<Integer, ImmutablePair<Integer, Integer>> jobCompletionData = results.getNthJobCompletionData(specification.getNumJobs() - 1);
+        final int lastJobCompletionTime = jobCompletionData.values().stream().findFirst().get().left;
         assertEquals(finishTime, lastJobCompletionTime);
     }
 
@@ -41,11 +42,11 @@ public class SimulationProperties {
         }
 
         int totalJobWaitTime = 0;
-        Map<Integer, ArrayList<Integer>> jobCompletionData;
+        Map<Integer, ImmutablePair<Integer, Integer>> jobCompletionData;
 
         for(int j = 0; j < specification.getNumJobs(); j++) {
             jobCompletionData = results.getNthJobCompletionData(j);
-            final int jobWaitTime = jobCompletionData.values().stream().findFirst().get().get(1);
+            final int jobWaitTime = jobCompletionData.values().stream().findFirst().get().right;
             assertThat(jobWaitTime, greaterThanOrEqualTo(0));
             totalJobWaitTime += jobWaitTime;
         }
@@ -60,13 +61,13 @@ public class SimulationProperties {
     {
         final SimulationResults results = MachineShopSimulator.runSimulation(specification);
 
-        Map<Integer, ArrayList<Integer>> jobCompletionData;
-        Map<Integer, ArrayList<Integer>> jobCompletionData2;
+        Map<Integer, ImmutablePair<Integer, Integer>> jobCompletionData;
+        Map<Integer, ImmutablePair<Integer, Integer>> jobCompletionData2;
         for (int i = 1; i < specification.getNumJobs() - 1; ++i) {
             jobCompletionData = results.getNthJobCompletionData(i);
             jobCompletionData2 = results.getNthJobCompletionData(i + 1);
-            assertThat(jobCompletionData.values().stream().findFirst().get().get(0),
-                    lessThanOrEqualTo(jobCompletionData2.values().stream().findFirst().get().get(0)));
+            assertThat(jobCompletionData.values().stream().findFirst().get().left,
+                    lessThanOrEqualTo(jobCompletionData2.values().stream().findFirst().get().left));
         }
     }
 
